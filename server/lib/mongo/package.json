@@ -1,0 +1,6 @@
+{
+  "name": "mongo",
+  "version": "1.0.0",
+  "main": "mongo.js",
+  "author": ""
+}
