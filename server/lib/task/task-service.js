@@ -1,4 +1,4 @@
-import moment from 'moment'
+import moment from 'moment';
 import mongodb from 'mongodb';
 let ObjectID = mongodb.ObjectID;
 
@@ -37,10 +37,10 @@ export default {
         });
     },
     getUndoneTasks: () => {
-        return db.find(TASK_COLLECTION, {status: {"$lt": 3}});
+        return db.find(TASK_COLLECTION, {status: {'$lt': 3}});
     },
     getRecent3MonthDoneTasks: () => {
         let threeMonthAgo = moment().subtract(3, 'months').toDate();
-        return db.find(TASK_COLLECTION, {status: 3, createtime: {"$gt": threeMonthAgo}}, 0, 10000, {createtime: -1});
+        return db.find(TASK_COLLECTION, {status: 3, createtime: {'$gt': threeMonthAgo}}, 0, 10000, {createtime: -1});
     }
 };
