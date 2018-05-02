@@ -12,12 +12,12 @@ const rootRouter = new Router({
 
 export default (app, runtimeConfig) => {
     app.use((ctx, next) => {
-        ctx.set('Access-Control-Allow-Origin', 'http://localhost:3000')
-        ctx.set('Access-Control-Allow-Credentials', 'true')
-        ctx.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-        ctx.set('Access-Control-Allow-Headers', 'Content-Type,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control')
-        return next()
-    })
+        ctx.set('Access-Control-Allow-Origin', 'http://localhost:3000');
+        ctx.set('Access-Control-Allow-Credentials', 'true');
+        ctx.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+        ctx.set('Access-Control-Allow-Headers', 'Content-Type,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control');
+        return next();
+    });
 
     runtimeConfig.staticPath && app.use(koaStatic(__dirname + runtimeConfig.staticPath));
     // app.use(koaStatic(__dirname + '/../../public'));
