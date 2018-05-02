@@ -1,0 +1,14 @@
+@define-function px2rem($val) {
+  @return $val / 60 * 1rem;
+}
+
+@define-mixin bg $bgImage, $position: 0 0, $size: contain {
+  background-image: url($bgImage);
+  background-repeat: no-repeat;
+  background-size: $size;
+  background-position: $position;
+}
+
+:root {
+  --color-pic-desc: yellow;
+}

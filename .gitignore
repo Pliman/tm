@@ -32,9 +32,6 @@ bower_components
 # Compiled binary addons (http://nodejs.org/api/addons.html)
 build/Release
 
-# IDE
-.idea
-
 # Dependency directories
 node_modules/
 jspm_packages/
@@ -59,4 +56,20 @@ typings/
 
 # dotenv environment variables file
 .env
+
+# MacOSX specifics
+.DS_Store
+
+# Build artifacts
+tmp
+dist
+ts_dist
+.sass-cache
+
+# IDE specifics
+.idea
+
+# temp files
+.tmp
+mock
 

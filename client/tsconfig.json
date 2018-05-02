@@ -1,0 +1,28 @@
+{
+  "compileOnSave": true,
+  "buildOnSave": true,
+  "compilerOptions": {
+    "baseUrl": ".",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "es5",
+    "jsx": "react",
+    "lib": [ "es2015.promise", "es7", "es5", "dom" ],
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "noImplicitAny": false,
+    "removeComments": false,
+    "sourceMap": true,
+    "noEmitHelpers": false,
+    "allowSyntheticDefaultImports": true,
+    "outDir": "./ts_dist",
+    "allowJs": true
+  },
+  "include": [
+    "app/*",
+    "app/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

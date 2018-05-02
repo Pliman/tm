@@ -19,6 +19,7 @@ export default class UserController {
             rtn.message = '登录成功';
 
             ctx.session.user = user;
+            rtn.user = user;
         } else {
             rtn.code = 1;
             rtn.message = '用户名或密码错误';
