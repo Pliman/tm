@@ -94,7 +94,41 @@ class UndoneTasks extends React.Component<UndoneTasksProps, UndoneTasksState> {
         }, 1000)
 
         function getLastsTime(task) {
-            return moment.utc(moment().diff(moment(task.starttime))).format("YYYY-MM-DD HH:mm:ss");
+            function formatDuration(duration) {
+                let years = duration.years()
+                let months = duration.months()
+                let days = duration.days()
+                let hours = duration.hours()
+                let minutes = duration.minutes()
+                let seconds = duration.seconds()
+
+                let lastsStr = ''
+                if (years) {
+                    lastsStr += `${years}-`
+                }
+                if (lastsStr || months) {
+                    lastsStr += `${months}-`
+                }
+                if (lastsStr || days) {
+                    lastsStr += `${days}`
+                }
+
+                lastsStr += ' '
+
+                if (lastsStr || hours) {
+                    lastsStr += `${hours}:`
+                }
+                if (lastsStr || minutes) {
+                    lastsStr += `${minutes}:`
+                }
+                if (lastsStr || seconds) {
+                    lastsStr += `${seconds}`
+                }
+
+                return lastsStr
+            }
+
+            return formatDuration(moment.duration(new Date().getTime() - new Date(task.starttime).getTime()))
         }
     }
 
