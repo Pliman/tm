@@ -32,7 +32,9 @@ class Login extends React.Component<LoginProps, LoginState> {
     }
 
     componentDidMount() {
-        this.props.user && this.jumpToUndoneTasks()
+        if (this.props.user) {
+            return this.jumpToUndoneTasks()
+        }
 
         this.props.dispatch({
             type: Login.LOGIN.ACTION,

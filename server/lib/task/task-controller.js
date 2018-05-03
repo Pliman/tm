@@ -2,6 +2,7 @@ import {route, HttpMethod} from 'koa-router-decorators-async';
 import {commonRtn} from '../utils/request-utils';
 import _ from 'lodash';
 import taskService from './task-service';
+import userService from "../user/user-service";
 
 @route('/tasks')
 export default class UserController {
@@ -12,11 +13,14 @@ export default class UserController {
 
     @route('/', HttpMethod.POST)
     async createTask(ctx) {
-        let task = ctx.request.body;
+        let taskCreateObj = ctx.request.body;
         let rtn = _.cloneDeep(commonRtn);
 
-        if (await taskService.createTask(task)) {
+        let task = await taskService.createTask(taskCreateObj);
+
+        if (task) {
             rtn.message = '创建成功';
+            rtn.task = task;
         } else {
             rtn.code = '1';
             rtn.message = '创建失败';
@@ -30,8 +34,11 @@ export default class UserController {
         let taskId = ctx.params.id;
         let rtn = _.cloneDeep(commonRtn);
 
-        if (await taskService.startTask(taskId)) {
+        let task = await taskService.startTask(taskId);
+
+        if (task) {
             rtn.message = '任务开始成功';
+            rtn.task = task;
         } else {
             rtn.code = '1';
             rtn.message = '任务开始失败';
@@ -45,8 +52,11 @@ export default class UserController {
         let taskId = ctx.params.id;
         let rtn = _.cloneDeep(commonRtn);
 
-        if (await taskService.completeTask(taskId)) {
+        let task = await taskService.completeTask(taskId);
+
+        if (task) {
             rtn.message = '任务完成成功';
+            rtn.task = task;
         } else {
             rtn.code = '1';
             rtn.message = '任务完成失败';

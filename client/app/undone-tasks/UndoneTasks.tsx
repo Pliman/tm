@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
+import { compose } from 'redux'
 
 import * as moment from 'moment'
 
@@ -50,7 +51,7 @@ class UndoneTasks extends React.Component<UndoneTasksProps, UndoneTasksState> {
     @action()
     static GET_UNDONE_TASKS
     @action()
-    static ADD_TASK
+    static CREATE_TASK
     @action()
     static START_TASK
     @action()
@@ -79,6 +80,16 @@ class UndoneTasks extends React.Component<UndoneTasksProps, UndoneTasksState> {
     startTask(event, task) {
         event.stopPropagation()
 
+        this.props.dispatch({
+            type: UndoneTasks.START_TASK.ACTION,
+            payload: {
+                taskId: task._id,
+                callBack: this.startTaskCallback
+            }
+        })
+    }
+
+    startTaskCallback(err, task) {
         this.setLastsTime(task)
     }
 
@@ -179,7 +190,7 @@ class UndoneTasks extends React.Component<UndoneTasksProps, UndoneTasksState> {
 const mapStateToProps = (state) => {
     return {
         user: state.user,
-        undoneTasks: state.undoneTask && state.undoneTask.undoneTasks
+        undoneTasks: state.undoneTasks && state.undoneTasks.undoneTasks
     }
 }
 
