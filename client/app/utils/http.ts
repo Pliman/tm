@@ -42,7 +42,7 @@ const Http = {
     },
     setParam (url, params) {
         params.forEach((param) => {
-            url.replace(`:${param.name}`, param.value)
+            url = url.replace(`:${param.name}`, param.value)
         })
 
         return url

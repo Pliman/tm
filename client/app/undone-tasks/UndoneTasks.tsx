@@ -1,11 +1,8 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { compose } from 'redux'
 
 import * as moment from 'moment'
 
-import PropTypes from 'prop-types';
-import { withStyles } from 'material-ui/styles';
 import ExpansionPanel, {
     ExpansionPanelSummary,
     ExpansionPanelDetails,
@@ -15,20 +12,10 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import PlayIcon from '@material-ui/icons/PlayArrow';
 import DoneIcon from '@material-ui/icons/Done';
 
-const styles = theme => ({
-    root: {
-        width: '100%',
-    },
-    heading: {
-        fontSize: theme.typography.pxToRem(15),
-        fontWeight: theme.typography.fontWeightRegular,
-    },
-});
-const classes = {
-    root: 'root',
-    heading: 'heading'
-}
-
+import AddIcon from '@material-ui/icons/Add';
+import Button from 'material-ui/Button';
+import Tooltip from 'material-ui/Tooltip';
+import CreateTaskDialog from './CreateTaskDialog'
 
 import { action } from '../utils/redux-decorators'
 
@@ -44,7 +31,8 @@ interface UndoneTasksProps {
 }
 
 interface UndoneTasksState {
-    tasksStatus: any
+    startedTasks
+    tasksStatus
 }
 
 class UndoneTasks extends React.Component<UndoneTasksProps, UndoneTasksState> {
@@ -60,8 +48,21 @@ class UndoneTasks extends React.Component<UndoneTasksProps, UndoneTasksState> {
     constructor(props) {
         super(props)
         this.state = {
+            startedTasks: [],
             tasksStatus: {}
         }
+
+        this.setupTimer = this.setupTimer.bind(this)
+        this.createTaskDialog = this.createTaskDialog.bind(this)
+        this.createTask = this.createTask.bind(this)
+    }
+
+    refs: {
+        createTaskDialog: any
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.calcLastsTime(nextProps.undoneTasks)
     }
 
     componentDidMount() {
@@ -75,36 +76,39 @@ class UndoneTasks extends React.Component<UndoneTasksProps, UndoneTasksState> {
                 user: this.props.user._id
             }
         })
+
+        this.setupTimer()
     }
 
-    startTask(event, task) {
-        event.stopPropagation()
+    calcLastsTime(tasks){
+        let startedTasks = []
 
-        this.props.dispatch({
-            type: UndoneTasks.START_TASK.ACTION,
-            payload: {
-                taskId: task._id,
-                callBack: this.startTaskCallback
+        tasks.forEach((task) => {
+            if (task.status === 1 && task.starttime) {
+                startedTasks.push(task)
             }
+        })
+
+        this.setState({
+            startedTasks: startedTasks
         })
     }
 
-    startTaskCallback(err, task) {
-        this.setLastsTime(task)
-    }
+    setupTimer() {
+        let startedTask
 
-    setLastsTime(task){
-        if (task.status !== 1) { // not started
-            return
-        }
+        Object.keys(this.state.startedTasks).forEach((startedTaskId) => {
+            startedTask = this.state.startedTasks[startedTaskId]
 
-        setInterval(() => {
             this.setState({
-                tasksStatus: {...this.state.tasksStatus, [task._id]: getLastsTime(task)}
+                tasksStatus: {
+                    ...this.state.tasksStatus,
+                    [startedTask._id]: formatLastsTime(startedTask.starttime)}
             })
-        }, 1000)
+        })
 
-        function getLastsTime(task) {
+        setTimeout(this.setupTimer, 1000)
+        function formatLastsTime(starttime) {
             function formatDuration(duration) {
                 let years = duration.years()
                 let months = duration.months()
@@ -124,30 +128,66 @@ class UndoneTasks extends React.Component<UndoneTasksProps, UndoneTasksState> {
                     lastsStr += `${days}`
                 }
 
-                lastsStr += ' '
-
                 if (lastsStr || hours) {
-                    lastsStr += `${hours}:`
+                    lastsStr += ` ${hours}:`
                 }
-                if (lastsStr || minutes) {
-                    lastsStr += `${minutes}:`
-                }
-                if (lastsStr || seconds) {
-                    lastsStr += `${seconds}`
-                }
+
+                lastsStr += `${minutes}:`
+                lastsStr += `${seconds}`
 
                 return lastsStr
             }
 
-            return formatDuration(moment.duration(new Date().getTime() - new Date(task.starttime).getTime()))
+            return formatDuration(moment.duration(new Date().getTime() - new Date(starttime).getTime()))
         }
     }
 
-
-    completeTask(event, taskId) {
+    startTask(event, task) {
         event.stopPropagation()
-        console.log(taskId)
+
+        this.props.dispatch({
+            type: UndoneTasks.START_TASK.ACTION,
+            payload: {
+                taskId: task._id,
+                callback: this.startTaskCallback
+            }
+        })
     }
+
+    startTaskCallback(err) {
+    }
+
+
+    completeTask(event, task) {
+        event.stopPropagation()
+
+        this.props.dispatch({
+            type: UndoneTasks.COMPLETE_TASK.ACTION,
+            payload: {
+                taskId: task._id,
+                callback: this.completeTaskCallback
+            }
+        })
+    }
+
+    completeTaskCallback(err) {
+    }
+
+    createTaskDialog() {
+        this.refs.createTaskDialog.handleClickOpen()
+    }
+
+    createTask(task){
+        this.props.dispatch({
+            type: UndoneTasks.CREATE_TASK.ACTION,
+            payload: {
+                task: task,
+                callback: this.createTaskCb
+            }
+        })
+    }
+
+    createTaskCb () {}
 
     render() {
         return (
@@ -155,24 +195,24 @@ class UndoneTasks extends React.Component<UndoneTasksProps, UndoneTasksState> {
                 {this.props.undoneTasks && this.props.undoneTasks.map((undoneTask) => {
                     return (<ExpansionPanel key={undoneTask._id}>
                         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon/>}>
-                            <Typography className={classes.heading}>
+                            <Typography className={''}>
                                 {undoneTask.name}
                             </Typography>
-                            <Typography className={classes.heading}>
+
+                            {undoneTask.status === 1 || (<Typography className={''}>
                                 &nbsp;&nbsp;&nbsp;&nbsp;<PlayIcon onClick={(event) => {
                                 this.startTask(event, undoneTask)
                             }}/>
-                            </Typography>
-                            <Typography className={classes.heading}>
+                            </Typography>)}
+
+                            <Typography className={''}>
                                 &nbsp;&nbsp;&nbsp;&nbsp;<DoneIcon onClick={(event) => {
                                 this.completeTask(event, undoneTask)
                             }}/>
                             </Typography>
-                            <Typography className={classes.heading}>
+                            <Typography className={''}>
                                 &nbsp;&nbsp;&nbsp;&nbsp;
-                                {this.setLastsTime(undoneTask)}
-                                <span
-                                    ref="timer">{this.state.tasksStatus[undoneTask._id]}</span>
+                                <span>{this.state.tasksStatus[undoneTask._id]}</span>
                             </Typography>
                         </ExpansionPanelSummary>
                         <ExpansionPanelDetails>
@@ -182,6 +222,14 @@ class UndoneTasks extends React.Component<UndoneTasksProps, UndoneTasksState> {
                         </ExpansionPanelDetails>
                     </ExpansionPanel>)
                 })}
+                <div style={{position: "relative", marginTop: "20px"}}>
+                    <Tooltip title="Add task">
+                        <Button variant="fab" color="secondary" style={{position: "absolute", right: "50px", bottom: "0"}} onClick={this.createTaskDialog}>
+                            <AddIcon />
+                        </Button>
+                    </Tooltip>
+                </div>
+                <CreateTaskDialog ref="createTaskDialog" createTask={this.createTask}/>
             </div>
         )
     }

@@ -37,7 +37,7 @@ export default {
         });
     },
     getUndoneTasks: () => {
-        return db.find(TASK_COLLECTION, {status: {'$lt': 3}});
+        return db.find(TASK_COLLECTION, {$or: [{status: {'$lt': 3}}, {status: null}]});
     },
     getRecent3MonthDoneTasks: () => {
         let threeMonthAgo = moment().subtract(3, 'months').toDate();

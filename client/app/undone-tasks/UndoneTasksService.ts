@@ -8,7 +8,7 @@ import animationIteration = Simulate.animationIteration;
 const GET_UNDONE_TASKS_API = './api/tasks/undone'
 const CREATE_TASK_API = './api/tasks'
 const START_TASK_API = './api/tasks/:id/start'
-const COMPLETE_TASK_API = './api/tasks/:id/start'
+const COMPLETE_TASK_API = './api/tasks/:id/complete'
 
 class UndoneTasksService {
     @action('GET_UNDONE_TASKS')
@@ -59,7 +59,7 @@ class UndoneTasksService {
     static* CREATE_TASK(action) {
         try {
             let data = yield Http.post(CREATE_TASK_API,
-                {}
+                action.payload.task
             )
 
             if (data.code !== 0) {
@@ -78,17 +78,13 @@ class UndoneTasksService {
                 }
             })
 
+            yield put({
+                type: UndoneTasksService.UNDONE_TASKS_ACTION.ACTION
+            })
+
             action.payload.callback && action.payload.callback(null)
         } catch (err) {
-            yield put({type: UndoneTasksService.UNDONE_TASKS_ACTION.FAILED})
-        }
-    }
-
-    @reducer('createTask')
-    CREATE_TASK_SUCCESS(state, payload) {
-        return {
-            ...state,
-            ...payload
+            yield put({type: UndoneTasksService.CREATE_TASK_ACTION.FAILED})
         }
     }
 
@@ -110,35 +106,39 @@ class UndoneTasksService {
             }
 
             yield put({
-                type: UndoneTasksService.START_TASK_ACTION.SUCCESS,
-                payload: {
-                    startedTask: data.startedTask
-                }
+                type: UndoneTasksService.UNDONE_TASKS_ACTION.ACTION
             })
 
-            action.payload.callback && action.payload.callback(data.startedTask)
+            action.payload.callback && action.payload.callback()
         } catch (err) {
             yield put({type: UndoneTasksService.START_TASK_ACTION.FAILED})
         }
     }
 
-    @reducer('startTask')
-    START_TASK_SUCCESS(state, payload) {
-        let index = -1;
-        for (let i = 0, length = state.undoneTasks.length; i < length; i++) {
-            let task = state.undoneTasks[i]
-            if (task._id === payload.startedTask._id) {
-                index = i
-                break
+    @saga()
+    static* COMPLETE_TASK(action) {
+        try {
+            let data = yield Http.post(
+                Http.setParam(COMPLETE_TASK_API, [{name: 'id', value: action.payload.taskId}]),
+                null
+            )
+
+            if (data.code !== 0) {
+                yield put({
+                    type: UndoneTasksService.COMPLETE_TASK_ACTION.FAILED
+                })
+
+                action.payload.callback && action.payload.callback(data.message)
+                return
             }
-        }
 
-        state.undoneTasks.splice(index, 1, payload.startedTask)
+            yield put({
+                type: UndoneTasksService.UNDONE_TASKS_ACTION.ACTION
+            })
 
-        return {
-            ...state,
-            undoneTasks: state.undoneTasks
+            action.payload.callback && action.payload.callback()
+        } catch (err) {
+            yield put({type: UndoneTasksService.COMPLETE_TASK_ACTION.FAILED})
         }
     }
 }
-
