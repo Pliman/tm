@@ -25,6 +25,7 @@
         "app": "NODE_ENV=development ts-node server",
         "appw": "set NODE_ENV=development && ts-node server",
         "build": "NODE_ENV=production webpack --config ./webpack.production.conf.ts --progress --profile --colors",
+        "buildw": "set NODE_ENV=production && webpack --config ./webpack.production.conf.ts --progress --profile --colors",
         "build:dev": "NODE_ENV=development webpack --config ./build/webpack.conf.ts --progress --profile --colors",
         "build:demo": "NODE_ENV=demo webpack --config ./build/webpack.conf.ts --progress --profile --colors",
         "production": "NODE_ENV=production PORT=3000 node server",
