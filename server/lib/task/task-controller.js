@@ -2,7 +2,6 @@ import {route, HttpMethod} from 'koa-router-decorators-async';
 import {commonRtn} from '../utils/request-utils';
 import _ from 'lodash';
 import taskService from './task-service';
-import userService from "../user/user-service";
 
 @route('/tasks')
 export default class UserController {
