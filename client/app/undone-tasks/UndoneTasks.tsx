@@ -222,9 +222,9 @@ class UndoneTasks extends React.Component<UndoneTasksProps, UndoneTasksState> {
                         </ExpansionPanelDetails>
                     </ExpansionPanel>)
                 })}
-                <div style={{position: "relative", marginTop: "20px"}}>
+                <div style={{position: "relative", marginTop: "10px", height: "56px"}}>
                     <Tooltip title="Add task">
-                        <Button variant="fab" color="secondary" style={{position: "absolute", right: "50px", bottom: "0"}} onClick={this.createTaskDialog}>
+                        <Button variant="fab" color="secondary" style={{position: "absolute", right: "5px", bottom: "0"}} onClick={this.createTaskDialog}>
                             <AddIcon />
                         </Button>
                     </Tooltip>
