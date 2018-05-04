@@ -199,11 +199,11 @@ class UndoneTasks extends React.Component<UndoneTasksProps, UndoneTasksState> {
                                 {undoneTask.name}
                             </Typography>
 
-                            {undoneTask.status === 1 ? (<Typography className={''}>
+                            {undoneTask.status === 1 ? null : (<Typography className={''}>
                                 &nbsp;&nbsp;&nbsp;&nbsp;<PlayIcon onClick={(event) => {
                                 this.startTask(event, undoneTask)
                             }}/>
-                            </Typography>) : null}
+                            </Typography>)}
 
                             <Typography className={''}>
                                 &nbsp;&nbsp;&nbsp;&nbsp;<DoneIcon onClick={(event) => {
